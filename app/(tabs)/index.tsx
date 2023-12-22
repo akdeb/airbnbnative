@@ -1,31 +1,56 @@
-import { StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
+import React, { useMemo } from 'react';
+import { Link, Stack } from 'expo-router';
+import ExploreHeader from '@/components/ExploreHeader';
+import Listings from '@/components/Listings';
+import listingsData from '@/assets/data/airbnb-listings.json';
+// import listingsGeoData from '@/assets/data/airbnb-geo.json';
+import ListingsMap from '@/components/ListingsMap';
+import ListingsBottomSheet from '@/components/ListingsBottomSheet';
 
-import EditScreenInfo from '../../components/EditScreenInfo';
-import { Text, View } from '../../components/Themed';
+const Index = () => {
+    const [categoryIndex, setCategoryIndex] = React.useState(0);
 
-export default function TabOneScreen() {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/(tabs)/index.tsx" />
-    </View>
-  );
-}
+    const updateCategoryIndex = (index: number) => {
+        setCategoryIndex(index);
+    };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
-});
+    const items = useMemo(() => listingsData as AirbnbListing[], []);
+
+    return (
+        <View style={{ flex: 1, marginTop: -20 }}>
+            <Stack.Screen
+                options={{
+                    header: () => (
+                        <ExploreHeader
+                            categoryIndex={categoryIndex}
+                            updateCategoryIndex={updateCategoryIndex}
+                        />
+                    ),
+                }}
+            />
+            {/* <Listings
+                categoryIndex={categoryIndex}
+                listings={items.filter(
+                    (_: AirbnbListing, index: number) => index % 7 === categoryIndex
+                )}
+            /> */}
+            <ListingsMap
+                // listingsGeoData={(listingsGeoData as { features: AirbnbGeoListing[] }).features}
+                listingsGeoData={
+                    items.filter(
+                        (_: AirbnbListing, index: number) => index % 7 === categoryIndex
+                    ) as AirbnbListing[]
+                }
+            />
+            <ListingsBottomSheet
+                categoryIndex={categoryIndex}
+                listings={items.filter(
+                    (_: AirbnbListing, index: number) => index % 7 === categoryIndex
+                )}
+            />
+        </View>
+    );
+};
+
+export default Index;
