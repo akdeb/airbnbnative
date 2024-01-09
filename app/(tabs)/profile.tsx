@@ -14,6 +14,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { defaultStyles } from '@/constants/Styles';
 import Colors from '@/constants/Colors';
 import * as ImagePicker from 'expo-image-picker';
+import ProfilePage from '@/components/Profile/ProfilePage';
+import ProfileLogin from '@/components/Profile/ProfileLogin';
 
 const Profile = () => {
     const { signOut, isSignedIn } = useAuth();
@@ -64,16 +66,8 @@ const Profile = () => {
                     </TouchableOpacity>
                 </View>
             )}
-            {isSignedIn && <Button title="Logout" onPress={() => signOut()} color={Colors.dark} />}
-            {!isSignedIn && (
-                <Link href={'/(modals)/login'}>
-                    <Button
-                        title="Login"
-                        onPress={() => router.push('/(modals)/login')}
-                        color={Colors.dark}
-                    />
-                </Link>
-            )}
+            {!isSignedIn && <ProfilePage />}
+            {isSignedIn && <ProfileLogin />}
         </SafeAreaView>
     );
 };
