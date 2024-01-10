@@ -41,12 +41,21 @@ const GenreChips = () => {
         }
     };
 
+    const getRandomTilt = () => {
+        // Generate a random number between -10 to 10
+        return (Math.random() * 10 - 5) / 12;
+    };
+
     return (
         <View style={styles.container}>
             {genres.map((genre, index) => (
                 <TouchableOpacity
                     key={index}
-                    style={[styles.chip, selectedGenres.includes(genre) ? styles.chipSelected : {}]}
+                    style={[
+                        styles.chip,
+                        { transform: [{ rotate: `${getRandomTilt()}deg` }] },
+                        selectedGenres.includes(genre) ? styles.chipSelected : {},
+                    ]}
                     onPress={() => toggleGenre(genre)}
                 >
                     <Text

@@ -1,11 +1,18 @@
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { Alert, View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { useWarmUpBrowser } from '@/hooks/useWarmUpBrowser';
 import { defaultStyles } from '@/constants/Styles';
 import LoginButton from '@/components/LoginButton';
 import { Ionicons } from '@expo/vector-icons';
-import { useOAuth } from '@clerk/clerk-expo';
+import { supabase } from '@/src/config/initSupabase';
 import { useRouter } from 'expo-router';
+import { FontAwesome5 } from '@expo/vector-icons';
+import LoginHeader from '@/components/BopLogo/LoginHeader';
+import { EXPO_PUBLIC_SPOTIFY_CLIENT_ID } from '@env';
+// import * as AppAuth from 'expo-app-auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+import Spotify1 from '@/components/Profile/Spotify1';
 
 const styles = StyleSheet.create({
     container: {
@@ -27,68 +34,191 @@ const styles = StyleSheet.create({
     },
 });
 
-enum Strategy {
-    Google = 'oauth_google',
-    Facebook = 'oauth_facebook',
-    Apple = 'oauth_apple',
-}
-
 const Login = () => {
     useWarmUpBrowser();
     const router = useRouter();
-    const { startOAuthFlow: startAppleOAuthFlow } = useOAuth({ strategy: Strategy.Apple });
-    const { startOAuthFlow: startGoogleOAuthFlow } = useOAuth({ strategy: Strategy.Google });
-    const { startOAuthFlow: startFacebookOAuthFlow } = useOAuth({ strategy: Strategy.Facebook });
+    const navigation = useNavigation();
 
-    const onSelectAuth = async (strategy: Strategy) => {
-        const selectedAuth = {
-            [Strategy.Apple]: startAppleOAuthFlow,
-            [Strategy.Google]: startGoogleOAuthFlow,
-            [Strategy.Facebook]: startFacebookOAuthFlow,
-        }[strategy];
+    const [email, setEmail] = React.useState('');
+    const [password, setPassword] = React.useState('');
+    const [continuePressed, setContinuePressed] = React.useState(false);
+    const [loading, setLoading] = React.useState(false);
+    const [error, setError] = React.useState<string>('');
+
+    React.useEffect(() => {
+        const checkTokenValidity = async () => {
+            const accessToken = await AsyncStorage.getItem('token');
+            const expirationDate = await AsyncStorage.getItem('expirationDate');
+            console.log('acess token', accessToken);
+            console.log('expiration date', expirationDate);
+
+            if (accessToken && expirationDate) {
+                const currentTime = Date.now();
+                if (currentTime < parseInt(expirationDate)) {
+                    // here the token is still valid
+                    router.replace('/(tabs)/');
+                } else {
+                    // token would be expired so we need to remove it from the async storage
+                    AsyncStorage.removeItem('token');
+                    AsyncStorage.removeItem('expirationDate');
+                }
+            }
+        };
+
+        checkTokenValidity();
+    }, []);
+
+    // // Sign in with email and password
+    // const onSignInPress = async () => {
+    //     setLoading(true);
+
+    //     const { error } = await supabase.auth.signInWithPassword({
+    //         email,
+    //         password,
+    //     });
+
+    //     if (error) Alert.alert(error.message);
+    //     setLoading(false);
+    // };
+
+    // // Create a new user
+    // const onSignUpPress = async () => {
+    //     setLoading(true);
+    //     const { error } = await supabase.auth.signUp({
+    //         email: email,
+    //         password: password,
+    //     });
+
+    //     if (error) Alert.alert(error.message);
+    //     setLoading(false);
+    // };
+
+    const loginOrSignup = async () => {
+        setLoading(true);
+
+        const { error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        });
+        if (error) setError(error.message);
+
+        if (error) {
+            const { error } = await supabase.auth.signUp({
+                email,
+                password,
+            });
+
+            if (error) setError(error.message);
+        }
+
+        setLoading(false);
+    };
+
+    const loginWithSpotify = async (): Promise<any> => {
         try {
-            const { createdSessionId, setActive } = await selectedAuth();
-            if (createdSessionId) {
-                setActive!({ session: createdSessionId });
-                router.back();
-            }
-        } catch (err: any) {
-            console.log(err);
-            if (err.message === 'User closed the popup window') {
-                return;
-            }
+            const { data, error } = await supabase.auth.signInWithOAuth({
+                provider: 'spotify',
+            });
+
+            console.log('spotify oauth', data);
+
+            if (error) throw error;
+
+            //   console.log('User info:', user);
+            return data;
+        } catch (error) {
+            console.error('Error logging in with Spotify:', error);
+            return null;
         }
     };
 
+    const authenticateWithSpotify = async () => {
+        const config = {
+            issuer: 'https://accounts.spotify.com/authorize',
+            clientId: EXPO_PUBLIC_SPOTIFY_CLIENT_ID,
+            scopes: [
+                'user-read-email',
+                'user-library-read',
+                'user-read-recently-played',
+                'user-top-read',
+                'playlist-read-private',
+                'playlist-read-collaborative',
+                'playlist-modify-public', // or "playlist-modify-private"
+            ],
+            redirectUrl: 'exp://192.168.1.241:8081/--/spotify-auth-callback',
+        };
+        // const result = await AppAuth.authAsync(config);
+        // console.log(result);
+
+        // if (result.accessToken) {
+        //     const expirationDate = new Date(result.accessTokenExpirationDate!).getTime();
+        //     AsyncStorage.setItem('token', result.accessToken);
+        //     AsyncStorage.setItem('expirationDate', expirationDate.toString());
+        //     router.push('/(tabs)/');
+        // }
+    };
+
+    const continueWithEmail = email && continuePressed;
+
     return (
         <View style={styles.container}>
+            <LoginHeader />
             <TextInput
                 autoCapitalize="none"
                 placeholder="Email"
-                style={[defaultStyles.inputField, { marginBottom: 20 }]}
+                style={[defaultStyles.inputField, { marginBottom: 10 }]}
+                value={email}
+                onChangeText={setEmail}
             />
-            <TouchableOpacity style={defaultStyles.btn}>
-                <Text style={defaultStyles.btnText}>Continue</Text>
+            {continueWithEmail && (
+                <TextInput
+                    placeholder="password"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry
+                    style={[defaultStyles.inputField, { marginBottom: 20 }]}
+                />
+            )}
+            {error && <Text>{error}</Text>}
+            <TouchableOpacity
+                style={defaultStyles.btn}
+                onPress={() => {
+                    if (!continuePressed) setContinuePressed(true);
+                    if (email && password) {
+                        loginOrSignup();
+                    }
+                }}
+                disabled={loading}
+            >
+                <Text style={defaultStyles.btnText}>
+                    Continue {continueWithEmail && 'with email'}
+                </Text>
             </TouchableOpacity>
             <View style={styles.separatorView}>
                 <View style={styles.separator} />
                 <Text style={{ color: '#444' }}>or</Text>
                 <View style={styles.separator} />
             </View>
+            <Spotify1 />
+
             <LoginButton
-                title={'Instagram'}
+                title={'Spotify'}
+                onPress={() => {
+                    // loginWithSpotify();
+                    authenticateWithSpotify();
+                }}
+                icon={<FontAwesome5 name="spotify" size={24} />}
+            />
+            <LoginButton
+                title={'Google'}
                 onPress={() => {}}
-                icon={<Ionicons name="logo-instagram" size={24} />}
+                icon={<FontAwesome5 name="google" size={22} color="black" />}
             />
             <LoginButton
                 title={'Apple'}
-                onPress={() => onSelectAuth(Strategy.Apple)}
-                icon={<Ionicons name="ios-logo-apple" size={24} />}
+                onPress={() => {}}
+                icon={<FontAwesome5 name="apple" size={24} color="black" />}
             />
-
-            {/* <LoginButton title={"Phone"} onPress={() => {}} icon={<Ionicons name='call-outline' size={24} />} />
-      <LoginButton title={"Google"} onPress={() => onSelectAuth(Strategy.Google)} icon={<Ionicons name='ios-logo-google' size={24} />} />
-      <LoginButton title={"Facebook"}  onPress={() => onSelectAuth(Strategy.Facebook)} icon={<Ionicons name='ios-logo-facebook' size={24} />} />*/}
         </View>
     );
 };

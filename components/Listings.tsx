@@ -32,50 +32,50 @@ const Listings: React.FC<ListingsProps> = ({ categoryIndex, listings }) => {
         }, 1000);
     }, [categoryIndex]);
 
-    const renderRow: ListRenderItem<AirbnbListing> = ({ item }) => {
-        return (
-            <Link href={`/listing/${item.id}`} asChild>
-                <TouchableOpacity>
-                    <Animated.View
-                        style={styles.listing}
-                        entering={FadeInRight}
-                        exiting={FadeInLeft}
-                    >
-                        <TouchableOpacity style={styles.heartBtn}>
-                            <Ionicons
-                                name="heart-outline"
-                                size={28}
-                                color="black"
-                                // style={{ fil: '#eee' }}
-                            />
-                        </TouchableOpacity>
-                        <Image style={styles.image} source={{ uri: item.thumbnail_url }} />
-                        <View style={styles.listingInfo}>
-                            <Text style={{ fontWeight: '600' }}>{item.name}</Text>
-                            <View style={{ flexDirection: 'row', gap: 5 }}>
-                                <Ionicons name="star" size={14} color="black" />
-                                <Text>{item.review_scores_rating / 20}</Text>
-                            </View>
-                        </View>
-                        <Text style={{ color: '#888' }}>{item.room_type}</Text>
-                        <View style={{ flexDirection: 'row', gap: 3 }}>
-                            <Text style={{ color: Colors.dark, fontWeight: '600' }}>
-                                ${item.price}
-                            </Text>
-                            <Text style={{ color: Colors.dark }}>night</Text>
-                        </View>
-                    </Animated.View>
-                </TouchableOpacity>
-            </Link>
-        );
-    };
+    // const renderRow: ListRenderItem<AirbnbListing> = ({ item }) => {
+    //     return (
+    //         <Link href={`/listing/${item.id}`} asChild>
+    //             <TouchableOpacity>
+    //                 <Animated.View
+    //                     style={styles.listing}
+    //                     entering={FadeInRight}
+    //                     exiting={FadeInLeft}
+    //                 >
+    //                     <TouchableOpacity style={styles.heartBtn}>
+    //                         <Ionicons
+    //                             name="heart-outline"
+    //                             size={28}
+    //                             color="black"
+    //                             // style={{ fil: '#eee' }}
+    //                         />
+    //                     </TouchableOpacity>
+    //                     <Image style={styles.image} source={{ uri: item.thumbnail_url }} />
+    //                     <View style={styles.listingInfo}>
+    //                         <Text style={{ fontWeight: '600' }}>{item.name}</Text>
+    //                         <View style={{ flexDirection: 'row', gap: 5 }}>
+    //                             <Ionicons name="star" size={14} color="black" />
+    //                             <Text>{item.review_scores_rating / 20}</Text>
+    //                         </View>
+    //                     </View>
+    //                     <Text style={{ color: '#888' }}>{item.room_type}</Text>
+    //                     <View style={{ flexDirection: 'row', gap: 3 }}>
+    //                         <Text style={{ color: Colors.dark, fontWeight: '600' }}>
+    //                             ${item.price}
+    //                         </Text>
+    //                         <Text style={{ color: Colors.dark }}>night</Text>
+    //                     </View>
+    //                 </Animated.View>
+    //             </TouchableOpacity>
+    //         </Link>
+    //     );
+    // };
 
     return (
         <View style={defaultStyles.container}>
             <BottomSheetFlatList
                 ref={listRef}
                 data={loading ? [] : listings}
-                renderItem={renderRow}
+                renderItem={null}
                 keyExtractor={(item) => item.id}
                 onEndReachedThreshold={0.5}
                 onScrollToIndexFailed={() => {

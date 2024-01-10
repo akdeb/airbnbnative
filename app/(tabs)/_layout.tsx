@@ -7,6 +7,7 @@ import {
     FontAwesome5,
     Ionicons,
     MaterialCommunityIcons,
+    MaterialIcons,
     Octicons,
 } from '@expo/vector-icons';
 
@@ -22,8 +23,25 @@ const Layout = () => {
                 name="index"
                 options={{
                     tabBarLabel: 'Bop',
+                    headerTitle: () => (
+                        <View
+                            style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                gap: 5,
+                            }}
+                        >
+                            <MaterialCommunityIcons
+                                name="saxophone"
+                                size={28}
+                                color="black"
+                                style={{ transform: [{ rotate: `20deg` }, { scaleX: -1 }] }}
+                            />
+                            <Text style={{ fontSize: 24, fontWeight: '400' }}>Bop</Text>
+                        </View>
+                    ),
                     tabBarIcon: ({ color, size }) => (
-                        <Ionicons name="copy-outline" color={color} size={size} />
+                        <MaterialIcons name="amp-stories" color={color} size={size} />
                     ),
                 }}
             />

@@ -36,9 +36,9 @@ const styles = StyleSheet.create({
 
 const ListingsMap: React.FC<ListingsMapProps> = ({ listingsGeoData }) => {
     const router = useRouter();
-    const onMarkerPress = (item: AirbnbListing) => {
-        router.push(`/listing/${item.id}`);
-    };
+    // const onMarkerPress = (item: AirbnbListing) => {
+    //     router.push(`/listing/${item.id}`);
+    // };
 
     const renderCluster = (cluster: any) => {
         const { id, geometry, properties, onPress } = cluster;
@@ -79,7 +79,7 @@ const ListingsMap: React.FC<ListingsMapProps> = ({ listingsGeoData }) => {
                 {listingsGeoData.map((listing) => {
                     return (
                         <Marker
-                            onPress={() => onMarkerPress(listing)}
+                            onPress={() => {}}
                             key={listing.id}
                             coordinate={{
                                 latitude: +listing.latitude,
