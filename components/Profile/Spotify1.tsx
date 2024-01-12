@@ -13,7 +13,6 @@ const discovery = {
 };
 
 export default function Spotify1() {
-    console.log('printing');
     const [request, response, promptAsync] = useAuthRequest(
         {
             clientId: EXPO_PUBLIC_SPOTIFY_CLIENT_ID,
@@ -22,13 +21,14 @@ export default function Spotify1() {
             // this must be set to false
             usePKCE: false,
             redirectUri: makeRedirectUri({
-                scheme: 'myapp',
+                scheme: 'com.akadeb.bop',
             }),
         },
         discovery
     );
 
     React.useEffect(() => {
+        console.log('request', request, 'response', response);
         if (response?.type === 'success') {
             const { code } = response.params;
             console.log(code);

@@ -2,6 +2,8 @@ import { View, Text } from 'react-native';
 import React from 'react';
 import { Tabs } from 'expo-router';
 import Colors from '@/constants/Colors';
+import { BottomTabBar } from '@react-navigation/bottom-tabs';
+
 import {
     Feather,
     FontAwesome5,
@@ -10,6 +12,7 @@ import {
     MaterialIcons,
     Octicons,
 } from '@expo/vector-icons';
+import { TAB_HEIGHT } from '@/constants/Constants';
 
 const Layout = () => {
     return (
@@ -18,6 +21,11 @@ const Layout = () => {
                 tabBarActiveTintColor: Colors.primary,
                 // tabBarLabelStyle: {}
             }}
+            tabBar={(props) => (
+                <View style={{ height: TAB_HEIGHT }}>
+                    <BottomTabBar {...props} />
+                </View>
+            )}
         >
             <Tabs.Screen
                 name="index"
@@ -35,7 +43,7 @@ const Layout = () => {
                                 name="saxophone"
                                 size={28}
                                 color="black"
-                                style={{ transform: [{ rotate: `20deg` }, { scaleX: -1 }] }}
+                                style={{ transform: 'rotate(20deg) scaleX(-1)' }}
                             />
                             <Text style={{ fontSize: 24, fontWeight: '400' }}>Bop</Text>
                         </View>

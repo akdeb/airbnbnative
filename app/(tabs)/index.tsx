@@ -7,19 +7,10 @@ import Listings from '@/components/Listings';
 import ListingsMap from '@/components/ListingsMap';
 import ListingsBottomSheet from '@/components/ListingsBottomSheet';
 import CardStack from '@/components/BopStack/CardStack';
+import FeedScreen from '@/components/BopStack/FeedScreen';
 
 const Index = () => {
-    const [categoryIndex, setCategoryIndex] = React.useState(0);
-
-    const updateCategoryIndex = (index: number) => {
-        setCategoryIndex(index);
-    };
-
-    return (
-        <View style={{ flex: 1, marginTop: -20 }}>
-            <CardStack />
-        </View>
-    );
+    return <FeedScreen />;
 };
 
 export default Index;

@@ -28,7 +28,7 @@ const CardStack: React.FC = () => {
     return (
         <View style={styles.container}>
             {mockData.map((card, index) => (
-                <View key={card.id} style={styles.cardContainer}>
+                <View key={card.id}>
                     {index === currentIndex && (
                         <BopCard data={<Text>{card.content}</Text>} onSwipe={handleSwipe} />
                     )}

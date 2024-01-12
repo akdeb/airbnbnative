@@ -72,7 +72,7 @@ function RootLayoutNav() {
                         return (
                             <TouchableOpacity
                                 onPress={() => {
-                                    router.back();
+                                    router.push('/');
                                 }}
                             >
                                 <Ionicons name="close" size={32} />

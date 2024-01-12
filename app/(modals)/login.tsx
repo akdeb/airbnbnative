@@ -100,6 +100,7 @@ const Login = () => {
             email,
             password,
         });
+
         if (error) setError(error.message);
 
         if (error) {

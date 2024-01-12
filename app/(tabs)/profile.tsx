@@ -23,21 +23,36 @@ const Profile = () => {
 
     console.log(user);
 
+    const ProfileHeader = () => {
+        return (
+            <View style={styles.headerContainer}>
+                <Text style={styles.header}>Profile</Text>
+                {/* <Ionicons name="notifications-outline" size={24} color="black" /> */}
+            </View>
+        );
+    };
+
     return (
         <SafeAreaView style={defaultStyles.container}>
-            <ScrollView showsHorizontalScrollIndicator={false}>
-                <View style={styles.headerContainer}>
-                    <Text style={styles.header}>Profile</Text>
-                    <Ionicons name="notifications-outline" size={24} color="black" />
+            {user ? (
+                <ScrollView showsHorizontalScrollIndicator={false}>
+                    <ProfileHeader />
+                    <View style={{ flex: 1, backgroundColor: '#ccc' }}>
+                        <ProfilePage />
+                    </View>
+                </ScrollView>
+            ) : (
+                <View style={{ flex: 1 }}>
+                    <ProfileHeader />
+                    <ProfileLogin />
                 </View>
-                {user && <ProfilePage />}
-                {!user && <ProfileLogin />}
-            </ScrollView>
+            )}
         </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
+    // container: { flex: 1 },
     headerContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
